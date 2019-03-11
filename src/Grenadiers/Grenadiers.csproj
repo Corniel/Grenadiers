@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.0.1</Version>
+    <Authors>Corniel Nobel</Authors>
+    <Company>orniel Nobel</Company>
+    <Product>Grenadiers Guarding</Product>
+  </PropertyGroup>
+
+</Project>
