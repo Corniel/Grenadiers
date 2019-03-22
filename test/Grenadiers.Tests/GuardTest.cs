@@ -130,5 +130,27 @@ namespace Grenadiers.Tests
             Guid actual = Guard.NotEmpty(parameter, nameof(parameter));
             Assert.AreEqual(parameter.Value, actual);
         }
+
+        [Test]
+        public void NamedValue_NamedEnumValue_Guards()
+        {
+            var parameter = Base64FormattingOptions.None;
+            var actual = Guard.NamedValue(parameter, nameof(parameter));
+            Assert.AreEqual(parameter, actual);
+        }
+
+        [Test]
+        public void NamedValue_NotNamedEnumValue_Throws()
+        {
+            var parameter = (Base64FormattingOptions)20;
+            Assert.Throws<ArgumentOutOfRangeException>(()=> Guard.NamedValue(parameter, nameof(parameter)));
+        }
+
+        [Test]
+        public void NamedValue_NoEnum_Throws()
+        {
+            var parameter = Guid.Empty;
+            Assert.Throws<ArgumentException>(() => Guard.NamedValue(parameter, nameof(parameter)));
+        }
     }
 }
