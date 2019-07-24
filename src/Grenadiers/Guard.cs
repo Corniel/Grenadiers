@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 
 namespace Grenadiers
@@ -80,7 +81,7 @@ namespace Grenadiers
             if (!allowedRange.Contains(parameter))
             {
                 var allowed = string.Join(", ", allowedRange);
-                throw new ArgumentOutOfRangeException(paramName, string.Format(Messages.ArgumentOutOfRangeException_NotInCollection, allowed));
+                throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_NotInCollection, allowed));
             }
             return parameter;
         }
@@ -96,7 +97,7 @@ namespace Grenadiers
             if (forbiddenRange.Contains(parameter))
             {
                 var forbidden = string.Join(", ", forbiddenRange);
-                throw new ArgumentOutOfRangeException(paramName, string.Format(Messages.ArgumentOutOfRangeException_InCollection, forbidden));
+                throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_InCollection, forbidden));
             }
             return parameter;
         }
@@ -114,7 +115,7 @@ namespace Grenadiers
             {
                 return parameter;
             }
-            throw new ArgumentOutOfRangeException(paramName, string.Format(Messages.ArgumentOutOfRangeException_DefinedEnum, parameter, typeof(T)));
+            throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_DefinedEnum, parameter, typeof(T)));
         }
 
         /// <summary>
@@ -126,12 +127,14 @@ namespace Grenadiers
         /// <param name="parameter">The parameter to guard.</param>
         /// <param name="paramName">The name of the parameter.</param>
         [DebuggerStepThrough]
+#pragma warning disable S4018 // Generic methods should provide type parameters, but here it provides casting.
         public static T IsInstanceOf<T>(object parameter, string paramName)
+#pragma warning restore S4018 // Generic methods should provide type parameters
         {
             NotNull(parameter, paramName);
             if (!(parameter is T))
             {
-                throw new ArgumentException(string.Format(Messages.ArgumentException_NotAnInstanceOf, typeof(T)), paramName);
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Messages.ArgumentException_NotAnInstanceOf, typeof(T)), paramName);
             }
             return (T)parameter;
         }
