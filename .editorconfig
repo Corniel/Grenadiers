@@ -1,0 +1,25 @@
+﻿root = true
+[*]
+end_of_line = crlf
+insert_final_newline = true
+
+# Code files
+[*.cs]
+indent_style = space
+indent_size = 4
+
+# Project files
+[*.{csproj,props}]
+indent_style = space
+indent_size = 2
+
+# IDE warnings
+[*.cs]
+# SA1200: Using directives should be placed correctly
+dotnet_diagnostic.SA1200.severity = none
+# SA1637: File header should contain file name
+dotnet_diagnostic.SA1637.severity = none
+# SA1640: File header should have valid company text
+dotnet_diagnostic.SA1640.severity = none
+# SA1636: File header copyright text should match
+dotnet_diagnostic.SA1636.severity = none
