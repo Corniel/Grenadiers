@@ -1,7 +1,7 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright>
 //    Copyright (c) Corniel Nobel. All rights reserved.
-//    See: https://github.com/Corniel/Grenadiers/blob/master/README.md
+//    See: https://github.com/Corniel/Grenadiers/blob/master/LICENSE.md
 // </copyright>
 //-----------------------------------------------------------------------
 
