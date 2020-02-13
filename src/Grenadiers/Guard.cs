@@ -554,10 +554,11 @@ namespace Grenadiers
         /// <remarks>
         /// Notice that it does not matter what this attribute does, as long as
         /// it is named ValidatedNotNullAttribute.
+        ///
+        /// It is marked as conditional, as does not add anything to have the attribute compiled.
         /// </remarks>
+        [Conditional("Analysis")]
         [AttributeUsage(AttributeTargets.Parameter)]
-        private sealed class ValidatedNotNullAttribute : Attribute
-        {
-        }
+        private sealed class ValidatedNotNullAttribute : Attribute { }
     }
 }
