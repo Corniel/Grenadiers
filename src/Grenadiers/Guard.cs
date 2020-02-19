@@ -176,12 +176,12 @@ namespace Grenadiers
 #pragma warning restore S4018 // Generic methods should provide type parameters
         {
             NotNull(parameter, paramName);
-            if (!(parameter is T))
+            if (!(parameter is T instance))
             {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Messages.ArgumentException_NotAnInstanceOf, typeof(T)), paramName);
             }
 
-            return (T)parameter;
+            return instance;
         }
 
         /// <summary>Guards that the parameter is not null or an empty collection, otherwise throws an argument (null) exception.</summary>
