@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 
@@ -22,7 +23,8 @@ namespace Grenadiers
     /// * Add specific Guard methods if you software needs them.
     /// * Keep the checks cheep so that you also can run them in production code.
     /// </remarks>
-    internal static class Guard
+    [ExcludeFromCodeCoverage]
+    internal static partial class Guard
     {
         /// <summary>Guards the parameter if not null, otherwise throws an argument (null) exception.</summary>
         /// <typeparam name="T">The type to guard; cannot be a structure.</typeparam>
