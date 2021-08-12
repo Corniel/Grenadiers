@@ -36,15 +36,10 @@ namespace Grenadiers
         [DebuggerStepThrough]
         public static T NotNull<T>([ValidatedNotNull]T parameter, string paramName)
             where T : class
-        {
-            if (parameter is null)
-            {
-                throw new ArgumentNullException(paramName);
-            }
-
-            return parameter;
-        }
-
+            => parameter is null
+            ? throw new ArgumentNullException(paramName)
+            : parameter;
+    
         /// <summary>Throws an ArgumentException if the nullable parameter has no value, otherwise the parameter value is passed.</summary>
         /// <typeparam name="T">The type to guard; must be a structure.</typeparam>
         /// <param name="parameter">The parameter to guard.</param>
@@ -55,14 +50,9 @@ namespace Grenadiers
         [DebuggerStepThrough]
         public static T HasValue<T>(T? parameter, string paramName)
             where T : struct
-        {
-            if (!parameter.HasValue)
-            {
-                throw new ArgumentException(Messages.ArgumentException_NullableMustHaveValue, paramName);
-            }
-
-            return parameter.Value;
-        }
+            => parameter.HasValue
+            ? parameter.Value
+            : throw new ArgumentException(Messages.ArgumentException_NullableMustHaveValue, paramName);
 
         /// <summary>
         /// Throws an ArgumentException if the nullable parameter has no value or the default value,
@@ -76,8 +66,7 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static T NotDefault<T>(T? parameter, string paramName)
-            where T : struct =>
-            NotDefault(HasValue(parameter, paramName), paramName);
+            where T : struct => NotDefault(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter has the default value, otherwise the parameter value is passed.</summary>
         /// <typeparam name="T">The type to guard; must be a structure.</typeparam>
@@ -89,14 +78,9 @@ namespace Grenadiers
         [DebuggerStepThrough]
         public static T NotDefault<T>(T parameter, string paramName)
             where T : struct
-        {
-            if (parameter.Equals(default(T)))
-            {
-                throw new ArgumentException(Messages.ArgumentException_IsDefaultValue, paramName);
-            }
-
-            return parameter;
-        }
+            => parameter.Equals(default(T))
+            ? throw new ArgumentException(Messages.ArgumentException_IsDefaultValue, paramName)
+            : parameter;
 
         /// <summary>Throws an <see cref="ArgumentOutOfRangeException"/> if the parameter is not in the collection, otherwise the parameter is passed.</summary>
         /// <typeparam name="T">The type to guard; must be a structure.</typeparam>
@@ -109,15 +93,9 @@ namespace Grenadiers
         [DebuggerStepThrough]
         public static T In<T>(T parameter, string paramName, params T[] allowedRange)
             where T : struct
-        {
-            if (!allowedRange.Contains(parameter))
-            {
-                var allowed = string.Join(", ", allowedRange);
-                throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_NotInCollection, allowed));
-            }
-
-            return parameter;
-        }
+            => allowedRange.Contains(parameter)
+            ? parameter
+            : throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_NotInCollection, string.Join(", ", allowedRange)));
 
         /// <summary>Throws an <see cref="ArgumentOutOfRangeException"/> if the parameter not in the collection, otherwise the parameter is passed.</summary>
         /// <typeparam name="T">The type to guard; must be a structure.</typeparam>
@@ -130,15 +108,9 @@ namespace Grenadiers
         [DebuggerStepThrough]
         public static T NotIn<T>(T parameter, string paramName, params T[] forbiddenRange)
             where T : struct
-        {
-            if (forbiddenRange.Contains(parameter))
-            {
-                var forbidden = string.Join(", ", forbiddenRange);
-                throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_InCollection, forbidden));
-            }
-
-            return parameter;
-        }
+            => forbiddenRange.Contains(parameter)
+            ? throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_InCollection, string.Join(", ", forbiddenRange)))
+            : parameter;
 
         /// <summary>Throws an <see cref="ArgumentOutOfRangeException"/> if the parameter not in not a defined value of the enum, otherwise the parameter is passed.</summary>
         /// <typeparam name="T">The type to guard; must be a structure (enum).</typeparam>
@@ -152,14 +124,9 @@ namespace Grenadiers
         /// </remarks>
         public static T DefinedEnum<T>(T parameter, string paramName)
             where T : struct
-        {
-            if (Enum.IsDefined(typeof(T), parameter))
-            {
-                return parameter;
-            }
-
-            throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_DefinedEnum, parameter, typeof(T)));
-        }
+            => Enum.IsDefined(typeof(T), parameter)
+            ? parameter
+            : throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_DefinedEnum, parameter, typeof(T)));
 
         /// <summary>
         /// Guards that the parameter is an instance of T, otherwise throws an argument (null) exception.
@@ -176,15 +143,10 @@ namespace Grenadiers
 #pragma warning disable S4018 // Generic methods should provide type parameters, but here it provides casting.
         public static T IsInstanceOf<T>(object parameter, string paramName)
 #pragma warning restore S4018 // Generic methods should provide type parameters
-        {
-            NotNull(parameter, paramName);
-            if (!(parameter is T instance))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Messages.ArgumentException_NotAnInstanceOf, typeof(T)), paramName);
-            }
-
-            return instance;
-        }
+            => NotNull(parameter, paramName) is T instance
+            ? instance
+            : throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Messages.ArgumentException_NotAnInstanceOf, typeof(T)), paramName);
+            
 
         /// <summary>Guards that the parameter is not null or an empty collection, otherwise throws an argument (null) exception.</summary>
         /// <typeparam name="T">The type to guard; must be an <see cref="ICollection" />.</typeparam>
@@ -196,15 +158,9 @@ namespace Grenadiers
         [DebuggerStepThrough]
         public static T HasAny<T>([ValidatedNotNull]T parameter, string paramName)
             where T : class, ICollection
-        {
-            NotNull(parameter, paramName);
-            if (parameter.Count == 0)
-            {
-                throw new ArgumentException(Messages.ArgumentException_EmptyCollection, paramName);
-            }
-
-            return parameter;
-        }
+            => NotNull(parameter, paramName).Count == 0
+            ? throw new ArgumentException(Messages.ArgumentException_EmptyCollection, paramName)
+            : parameter;
 
         /// <summary>Guards that the parameter is not null or an empty enumerable, otherwise throws an argument (null) exception.</summary>
         /// <typeparam name="T">The type to guard; must be an <see cref="IEnumerable" />.</typeparam>
@@ -215,15 +171,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static IEnumerable<T> HasAny<T>([ValidatedNotNull]IEnumerable<T> parameter, string paramName)
-        {
-            NotNull(parameter, paramName);
-            if (!parameter.Any())
-            {
-                throw new ArgumentException(Messages.ArgumentException_EmptyCollection, paramName);
-            }
-
-            return parameter;
-        }
+            => NotNull(parameter, paramName).Any()
+            ? parameter
+            : throw new ArgumentException(Messages.ArgumentException_EmptyCollection, paramName);
 
         /// <summary>Guards that the parameter is not null or an empty string, otherwise throws an argument (null) exception.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -233,15 +183,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static string NotNullOrEmpty([ValidatedNotNull]string parameter, string paramName)
-        {
-            NotNull(parameter, paramName);
-            if (parameter == string.Empty)
-            {
-                throw new ArgumentException(Messages.ArgumentException_StringEmpty, paramName);
-            }
-
-            return parameter;
-        }
+            => NotNull(parameter, paramName) == string.Empty
+            ? throw new ArgumentException(Messages.ArgumentException_StringEmpty, paramName)
+            : parameter;
 
         /// <summary>Guards that the parameter is not an empty <see cref="Guid"/>, otherwise throws an argument exception.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -250,7 +194,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static Guid NotEmpty(Guid? parameter, string paramName) => NotEmpty(HasValue(parameter, paramName), paramName);
+        public static Guid NotEmpty(Guid? parameter, string paramName)
+            => NotEmpty(HasValue(parameter, paramName), paramName);
 
         /// <summary>Guards that the parameter is not an empty <see cref="Guid"/>, otherwise throws an argument exception.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -260,14 +205,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static Guid NotEmpty(Guid parameter, string paramName)
-        {
-            if (parameter == Guid.Empty)
-            {
-                throw new ArgumentException(Messages.ArgumentException_GuidEmpty, paramName);
-            }
-
-            return parameter;
-        }
+            => parameter == Guid.Empty
+            ? throw new ArgumentException(Messages.ArgumentException_GuidEmpty, paramName)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -276,7 +216,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static int Positive(int? parameter, string paramName) => Positive(HasValue(parameter, paramName), paramName);
+        public static int Positive(int? parameter, string paramName)
+            => Positive(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -286,14 +227,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static int Positive(int parameter, string paramName)
-        {
-            if (parameter <= 0)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive);
-            }
-
-            return parameter;
-        }
+            => parameter <= 0
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -312,14 +248,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static long Positive(long parameter, string paramName)
-        {
-            if (parameter <= 0)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive);
-            }
-
-            return parameter;
-        }
+            => parameter <= 0 
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -328,7 +259,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static double Positive(double? parameter, string paramName) => Positive(HasValue(parameter, paramName), paramName);
+        public static double Positive(double? parameter, string paramName)
+            => Positive(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -338,14 +270,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static double Positive(double parameter, string paramName)
-        {
-            if (parameter <= 0)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive);
-            }
-
-            return parameter;
-        }
+            => parameter <= 0
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -354,7 +281,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static decimal Positive(decimal? parameter, string paramName) => Positive(HasValue(parameter, paramName), paramName);
+        public static decimal Positive(decimal? parameter, string paramName)
+            => Positive(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -364,14 +292,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static decimal Positive(decimal parameter, string paramName)
-        {
-            if (parameter <= 0)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive);
-            }
-
-            return parameter;
-        }
+            => parameter <= 0 
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -380,7 +303,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static TimeSpan Positive(TimeSpan? parameter, string paramName) => Positive(HasValue(parameter, paramName), paramName);
+        public static TimeSpan Positive(TimeSpan? parameter, string paramName)
+            => Positive(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -390,14 +314,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static TimeSpan Positive(TimeSpan parameter, string paramName)
-        {
-            if (parameter <= TimeSpan.Zero)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive);
-            }
-
-            return parameter;
-        }
+            => parameter <= TimeSpan.Zero 
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -406,7 +325,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static int NotNegative(int? parameter, string paramName) => NotNegative(HasValue(parameter, paramName), paramName);
+        public static int NotNegative(int? parameter, string paramName)
+            => NotNegative(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -432,7 +352,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static long NotNegative(long? parameter, string paramName) => NotNegative(HasValue(parameter, paramName), paramName);
+        public static long NotNegative(long? parameter, string paramName)
+            => NotNegative(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -442,14 +363,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static long NotNegative(long parameter, string paramName)
-        {
-            if (parameter < 0)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative);
-            }
-
-            return parameter;
-        }
+            => parameter < 0
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -458,7 +374,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static double NotNegative(double? parameter, string paramName) => NotNegative(HasValue(parameter, paramName), paramName);
+        public static double NotNegative(double? parameter, string paramName)
+            => NotNegative(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -468,14 +385,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static double NotNegative(double parameter, string paramName)
-        {
-            if (parameter < 0)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative);
-            }
-
-            return parameter;
-        }
+            => parameter < 0 
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -484,7 +396,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static decimal NotNegative(decimal? parameter, string paramName) => NotNegative(HasValue(parameter, paramName), paramName);
+        public static decimal NotNegative(decimal? parameter, string paramName)
+            => NotNegative(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -494,14 +407,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static decimal NotNegative(decimal parameter, string paramName)
-        {
-            if (parameter < 0)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative);
-            }
-
-            return parameter;
-        }
+            => parameter < 0 
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -510,7 +418,8 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static TimeSpan NotNegative(TimeSpan? parameter, string paramName) => NotNegative(HasValue(parameter, paramName), paramName);
+        public static TimeSpan NotNegative(TimeSpan? parameter, string paramName)
+            => NotNegative(HasValue(parameter, paramName), paramName);
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -520,14 +429,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static TimeSpan NotNegative(TimeSpan parameter, string paramName)
-        {
-            if (parameter < TimeSpan.Zero)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative);
-            }
-
-            return parameter;
-        }
+            => parameter < TimeSpan.Zero
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative)
+            : parameter;
 
         /// <summary>Messages class to group the constants.</summary>
         private static class Messages
