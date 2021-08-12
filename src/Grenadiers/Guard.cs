@@ -21,7 +21,7 @@ namespace Grenadiers
     /// * Change the namespace to maximum shared namespace amongst the using projects
     /// * Keep it internal and use [assembly: InternalsVisibleTo] to open up access
     /// * Add specific Guard methods if you software needs them.
-    /// * Keep the checks cheep so that you also can run them in production code.
+    /// * Keep the checks cheap so that you also can run them in production code.
     /// </remarks>
     [ExcludeFromCodeCoverage]
     internal static partial class Guard
