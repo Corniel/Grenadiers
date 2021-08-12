@@ -34,11 +34,9 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static T NotNull<T>([ValidatedNotNull]T parameter, string paramName)
+        public static T NotNull<T>([ValidatedNotNull] T parameter, string paramName)
             where T : class
-            => parameter is null
-            ? throw new ArgumentNullException(paramName)
-            : parameter;
+            => parameter ?? throw new ArgumentNullException(paramName);
     
         /// <summary>Throws an ArgumentException if the nullable parameter has no value, otherwise the parameter value is passed.</summary>
         /// <typeparam name="T">The type to guard; must be a structure.</typeparam>
@@ -50,9 +48,7 @@ namespace Grenadiers
         [DebuggerStepThrough]
         public static T HasValue<T>(T? parameter, string paramName)
             where T : struct
-            => parameter.HasValue
-            ? parameter.Value
-            : throw new ArgumentException(Messages.ArgumentException_NullableMustHaveValue, paramName);
+            => parameter ?? throw new ArgumentException(Messages.ArgumentException_NullableMustHaveValue, paramName);
 
         /// <summary>
         /// Throws an ArgumentException if the nullable parameter has no value or the default value,
