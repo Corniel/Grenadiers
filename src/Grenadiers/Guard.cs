@@ -37,7 +37,7 @@ namespace Grenadiers
         public static T NotNull<T>([ValidatedNotNull] T parameter, string paramName)
             where T : class
             => parameter ?? throw new ArgumentNullException(paramName);
-    
+
         /// <summary>Throws an ArgumentException if the nullable parameter has no value, otherwise the parameter value is passed.</summary>
         /// <typeparam name="T">The type to guard; must be a structure.</typeparam>
         /// <param name="parameter">The parameter to guard.</param>
@@ -136,13 +136,11 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-#pragma warning disable S4018 // Generic methods should provide type parameters, but here it provides casting.
-        public static T IsInstanceOf<T>(object parameter, string paramName)
-#pragma warning restore S4018 // Generic methods should provide type parameters
+        public static T IsInstanceOf<T>([ValidatedNotNull] object parameter, string paramName)
             => NotNull(parameter, paramName) is T instance
             ? instance
             : throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Messages.ArgumentException_NotAnInstanceOf, typeof(T)), paramName);
-            
+
 
         /// <summary>Guards that the parameter is not null or an empty collection, otherwise throws an argument (null) exception.</summary>
         /// <typeparam name="T">The type to guard; must be an <see cref="ICollection" />.</typeparam>
@@ -152,7 +150,7 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static T HasAny<T>([ValidatedNotNull]T parameter, string paramName)
+        public static T HasAny<T>([ValidatedNotNull] T parameter, string paramName)
             where T : class, ICollection
             => NotNull(parameter, paramName).Count == 0
             ? throw new ArgumentException(Messages.ArgumentException_EmptyCollection, paramName)
@@ -166,7 +164,7 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static IEnumerable<T> HasAny<T>([ValidatedNotNull]IEnumerable<T> parameter, string paramName)
+        public static IEnumerable<T> HasAny<T>([ValidatedNotNull] IEnumerable<T> parameter, string paramName)
             => NotNull(parameter, paramName).Any()
             ? parameter
             : throw new ArgumentException(Messages.ArgumentException_EmptyCollection, paramName);
@@ -178,7 +176,7 @@ namespace Grenadiers
         /// The guarded parameter.
         /// </returns>
         [DebuggerStepThrough]
-        public static string NotNullOrEmpty([ValidatedNotNull]string parameter, string paramName)
+        public static string NotNullOrEmpty([ValidatedNotNull] string parameter, string paramName)
             => NotNull(parameter, paramName) == string.Empty
             ? throw new ArgumentException(Messages.ArgumentException_StringEmpty, paramName)
             : parameter;
@@ -244,7 +242,7 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static long Positive(long parameter, string paramName)
-            => parameter <= 0 
+            => parameter <= 0
             ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
             : parameter;
 
@@ -288,7 +286,7 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static decimal Positive(decimal parameter, string paramName)
-            => parameter <= 0 
+            => parameter <= 0
             ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
             : parameter;
 
@@ -310,7 +308,7 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static TimeSpan Positive(TimeSpan parameter, string paramName)
-            => parameter <= TimeSpan.Zero 
+            => parameter <= TimeSpan.Zero
             ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
             : parameter;
 
@@ -332,14 +330,9 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static int NotNegative(int parameter, string paramName)
-        {
-            if (parameter < 0)
-            {
-                throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative);
-            }
-
-            return parameter;
-        }
+            => parameter < 0
+            ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative)
+            : parameter;
 
         /// <summary>Throws an ArgumentException if the parameter is negative, otherwise the parameter is passed.</summary>
         /// <param name="parameter">The parameter to guard.</param>
@@ -381,7 +374,7 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static double NotNegative(double parameter, string paramName)
-            => parameter < 0 
+            => parameter < 0
             ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative)
             : parameter;
 
@@ -403,7 +396,7 @@ namespace Grenadiers
         /// </returns>
         [DebuggerStepThrough]
         public static decimal NotNegative(decimal parameter, string paramName)
-            => parameter < 0 
+            => parameter < 0
             ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_Negative)
             : parameter;
 
@@ -432,24 +425,17 @@ namespace Grenadiers
         /// <summary>Messages class to group the constants.</summary>
         private static class Messages
         {
-#pragma warning disable SA1310 // Field names should not contain underscore
-
             public const string ArgumentException_EmptyCollection = "Argument cannot be an empty collection.";
             public const string ArgumentException_GuidEmpty = "Argument cannot be an empty GUID.";
             public const string ArgumentException_IsDefaultValue = "Argument is the not initialized/default value.";
             public const string ArgumentException_NotAnInstanceOf = "Argument is not an instance of {0}.";
             public const string ArgumentException_NullableMustHaveValue = "Nullable argument must have a value.";
             public const string ArgumentException_StringEmpty = "Argument cannot be an empty string.";
-
             public const string ArgumentOutOfRangeException_InCollection = "Argument was in the collection of forbidden values. Forbidden are {0}.";
             public const string ArgumentOutOfRangeException_NotInCollection = "Argument was not in the collection of allowed values. Allowed are {0}.";
-
             public const string ArgumentOutOfRangeException_DefinedEnum = "Argument {0} is not a defined value of {1}.";
-
             public const string ArgumentOutOfRangeException_Negative = "Argument should not be negative.";
             public const string ArgumentOutOfRangeException_NotPositive = "Argument should be positive.";
-
-#pragma warning restore SA1310 // Field names should not contain underscore
         }
 
         /// <summary>Marks the NotNull argument as being validated for not being null, to satisfy the static code analysis.</summary>

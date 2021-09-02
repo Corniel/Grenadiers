@@ -23,3 +23,15 @@ dotnet_diagnostic.SA1637.severity = none
 dotnet_diagnostic.SA1640.severity = none
 # SA1636: File header copyright text should match
 dotnet_diagnostic.SA1636.severity = none
+
+# S3376: Attribute, EventArgs, and Exception type names should end with the type being extended
+dotnet_diagnostic.S3376.severity = none
+
+# S101: Types should be named in PascalCase
+dotnet_diagnostic.S101.severity = suggestion
+
+# IDE0022: Use block body for methods
+csharp_style_expression_bodied_methods = false
+
+# IDE1006: Naming Styles
+dotnet_diagnostic.IDE1006.severity = none

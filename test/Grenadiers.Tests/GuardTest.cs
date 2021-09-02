@@ -44,7 +44,7 @@ namespace Grenadiers.Tests
         [Test]
         public void HasAny_Empty_Throws()
         {
-            var parameter = new int[0];
+            var parameter = Array.Empty<int>();
             Assert.Throws<ArgumentException>(() => Guard.HasAny(parameter, nameof(parameter)));
         }
 
