@@ -150,7 +150,7 @@ namespace Grenadiers.Tests
         public void DefinedEnum_NoEnum_Throws()
         {
             var parameter = Guid.Empty;
-            Assert.Throws<InvalidOperationException>(() => Guard.DefinedEnum(parameter, nameof(parameter)));
+            Assert.Throws<ArgumentException>(() => Guard.DefinedEnum(parameter, nameof(parameter)));
         }
     }
 }
