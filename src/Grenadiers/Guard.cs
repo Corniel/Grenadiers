@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 
 namespace Grenadiers;
 
@@ -204,6 +205,28 @@ internal static partial class Guard
         ? throw new ArgumentException(Messages.ArgumentException_GuidEmpty, paramName)
         : parameter;
 
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not finite, otherwise the parameter is passed.</summary>
+    /// <param name="parameter">The parameter to guard.</param>
+    /// <param name="paramName">The name of the parameter.</param>
+    /// <returns>
+    /// The guarded parameter.
+    /// </returns>
+    [DebuggerStepThrough]
+    public static double Finite(double? parameter, string paramName) 
+        => Finite(HasValue(parameter, paramName), paramName);
+
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not finite, otherwise the parameter is passed.</summary>
+    /// <param name="parameter">The parameter to guard.</param>
+    /// <param name="paramName">The name of the parameter.</param>
+    /// <returns>
+    /// The guarded parameter.
+    /// </returns>
+    [DebuggerStepThrough]
+    public static double Finite(double parameter, string paramName)
+        => double.IsFinite(parameter)
+        ? parameter
+        : throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NoFinite);
+
     /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
@@ -214,7 +237,7 @@ internal static partial class Guard
     public static int Positive(int? parameter, string paramName)
         => Positive(HasValue(parameter, paramName), paramName);
 
-    /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
     /// <returns>
@@ -226,7 +249,7 @@ internal static partial class Guard
         ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
         : parameter;
 
-    /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
     /// <returns>
@@ -235,7 +258,7 @@ internal static partial class Guard
     [DebuggerStepThrough]
     public static long Positive(long? parameter, string paramName) => Positive(HasValue(parameter, paramName), paramName);
 
-    /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
     /// <returns>
@@ -247,7 +270,7 @@ internal static partial class Guard
         ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
         : parameter;
 
-    /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
     /// <returns>
@@ -257,7 +280,7 @@ internal static partial class Guard
     public static double Positive(double? parameter, string paramName)
         => Positive(HasValue(parameter, paramName), paramName);
 
-    /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
     /// <returns>
@@ -269,7 +292,7 @@ internal static partial class Guard
         ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
         : parameter;
 
-    /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
     /// <returns>
@@ -279,7 +302,7 @@ internal static partial class Guard
     public static decimal Positive(decimal? parameter, string paramName)
         => Positive(HasValue(parameter, paramName), paramName);
 
-    /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
     /// <returns>
@@ -291,7 +314,7 @@ internal static partial class Guard
         ? throw new ArgumentOutOfRangeException(paramName, Messages.ArgumentOutOfRangeException_NotPositive)
         : parameter;
 
-    /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
     /// <returns>
@@ -301,7 +324,7 @@ internal static partial class Guard
     public static TimeSpan Positive(TimeSpan? parameter, string paramName)
         => Positive(HasValue(parameter, paramName), paramName);
 
-    /// <summary>Throws an ArgumentException if the parameter is not positive, otherwise the parameter is passed.</summary>
+    /// <summary>Throws an ArgumentOutOfRangeException if the parameter is not positive, otherwise the parameter is passed.</summary>
     /// <param name="parameter">The parameter to guard.</param>
     /// <param name="paramName">The name of the parameter.</param>
     /// <returns>
@@ -437,6 +460,7 @@ internal static partial class Guard
         public const string ArgumentOutOfRangeException_DefinedEnum = "Argument {0} is not a defined value of {1}.";
         public const string ArgumentOutOfRangeException_Negative = "Argument should not be negative.";
         public const string ArgumentOutOfRangeException_NotPositive = "Argument should be positive.";
+        public const string ArgumentOutOfRangeException_NoFinite = "Argument should be a finite number.";
     }
 
     /// <summary>Marks the NotNull argument as being validated for not being null, to satisfy the static code analysis.</summary>
