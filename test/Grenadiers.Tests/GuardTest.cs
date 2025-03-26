@@ -135,7 +135,7 @@ namespace Grenadiers.Tests
         public void DefinedEnum_NamedEnumValue_Guards()
         {
             var parameter = Base64FormattingOptions.None;
-            var actual = Guard.DefinedEnum(parameter, nameof(parameter));
+            var actual = Guard.Defined(parameter);
             Assert.AreEqual(parameter, actual);
         }
 
@@ -143,14 +143,7 @@ namespace Grenadiers.Tests
         public void DefinedEnum_NotNamedEnumValue_Throws()
         {
             var parameter = (Base64FormattingOptions)20;
-            Assert.Throws<ArgumentOutOfRangeException>(()=> Guard.DefinedEnum(parameter, nameof(parameter)));
-        }
-
-        [Test]
-        public void DefinedEnum_NoEnum_Throws()
-        {
-            var parameter = Guid.Empty;
-            Assert.Throws<ArgumentException>(() => Guard.DefinedEnum(parameter, nameof(parameter)));
+            Assert.Throws<ArgumentOutOfRangeException>(()=> Guard.Defined(parameter));
         }
     }
 }

@@ -38,7 +38,7 @@ internal static partial class Guard
     /// The guarded parameter.
     /// </returns>
     [DebuggerStepThrough]
-    public static T NotNull<T>([ValidatedNotNull] T? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
+    public static T NotNull<T>( T? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
         where T : class
         => parameter ?? throw new ArgumentNullException(paramName);
 
@@ -123,9 +123,9 @@ internal static partial class Guard
     /// That <typeparamref name="T"/> is an enum is implicitly guard by <see cref="Enum.IsDefined(Type, object)"/>.
     /// </remarks>
     [DebuggerStepThrough]
-    public static T DefinedEnum<T>(T parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
-        where T : struct
-        => Enum.IsDefined(typeof(T), parameter)
+    public static T Defined<T>(T parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
+        where T : struct, Enum
+        => Enum.IsDefined(parameter)
         ? parameter
         : throw new ArgumentOutOfRangeException(paramName, string.Format(CultureInfo.CurrentCulture, Messages.ArgumentOutOfRangeException_DefinedEnum, parameter, typeof(T)));
 
@@ -141,7 +141,7 @@ internal static partial class Guard
     /// The guarded parameter.
     /// </returns>
     [DebuggerStepThrough]
-    public static T IsInstanceOf<T>([ValidatedNotNull] object? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
+    public static T IsInstanceOf<T>( object? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
         => NotNull(parameter, paramName) is T guarded
         ? guarded
         : throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Messages.ArgumentException_NotAnInstanceOf, typeof(T)), paramName);
@@ -155,7 +155,7 @@ internal static partial class Guard
     /// The guarded parameter.
     /// </returns>
     [DebuggerStepThrough]
-    public static T HasAny<T>([ValidatedNotNull] T? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
+    public static T HasAny<T>( T? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
         where T : class, ICollection
         => NotNull(parameter, paramName) is var guarded && guarded.Count == 0
         ? throw new ArgumentException(Messages.ArgumentException_EmptyCollection, paramName)
@@ -169,7 +169,7 @@ internal static partial class Guard
     /// The guarded parameter.
     /// </returns>
     [DebuggerStepThrough]
-    public static IEnumerable<T> HasAny<T>([ValidatedNotNull] IEnumerable<T>? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
+    public static IEnumerable<T> HasAny<T>( IEnumerable<T>? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
         => NotNull(parameter, paramName) is var guarded && guarded.Any()
         ? guarded
         : throw new ArgumentException(Messages.ArgumentException_EmptyCollection, paramName);
@@ -181,7 +181,7 @@ internal static partial class Guard
     /// The guarded parameter.
     /// </returns>
     [DebuggerStepThrough]
-    public static string NotNullOrEmpty([ValidatedNotNull] string? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
+    public static string NotNullOrEmpty( string? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
         => NotNull(parameter, paramName) is { Length: > 0 } guarded
         ? guarded
         : throw new ArgumentException(Messages.ArgumentException_StringEmpty, paramName);
@@ -457,7 +457,7 @@ internal static partial class Guard
     /// The guarded parameter.
     /// </returns>
     [DebuggerStepThrough]
-    public static FileInfo Exists([ValidatedNotNull]FileInfo? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
+    public static FileInfo Exists(FileInfo? parameter, [CallerArgumentExpression(nameof(parameter))] string? paramName = null)
         => NotNull(parameter).Exists
         ? parameter!
         : throw new ArgumentException(string.Format(Messages.ArgumentException_NotExists, parameter!.FullName), paramName);
@@ -479,15 +479,4 @@ internal static partial class Guard
         public const string ArgumentOutOfRangeException_NotPositive = "Argument should be positive.";
         public const string ArgumentOutOfRangeException_NoFinite = "Argument should be a finite number.";
     }
-
-    /// <summary>Marks the NotNull argument as being validated for not being null, to satisfy the static code analysis.</summary>
-    /// <remarks>
-    /// Notice that it does not matter what this attribute does, as long as
-    /// it is named ValidatedNotNullAttribute.
-    ///
-    /// It is marked as conditional, as does not add anything to have the attribute compiled.
-    /// </remarks>
-    [Conditional("Analysis")]
-    [AttributeUsage(AttributeTargets.Parameter)]
-    private sealed class ValidatedNotNullAttribute : Attribute { }
 }
